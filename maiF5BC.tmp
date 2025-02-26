@@ -1,0 +1,249 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvpd01ej5e6e"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_648gp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1how4"]
+bg_color = Color(1, 0, 1, 1)
+
+[sub_resource type="GDScript" id="GDScript_0vcfr"]
+script/source = "extends Node
+
+var scrap_metal = 0
+var e_waste = 0
+var plastics = 0
+
+func add_resource(resource_name: String, amount: int):
+	if resource_name == \"Scrap Metal\":
+		scrap_metal += amount
+	elif resource_name == \"E-Waste\":
+		e_waste += amount
+	elif resource_name == \"Plastics\":
+		plastics += amount
+	else:
+		print(\"Unknown resource: \", resource_name)
+
+	update_resource_display()
+
+func update_resource_display():
+	var resource_values = {
+		\"Scrap Metal\": scrap_metal,  # Use local variables instead of `resources.scrap_metal`
+		\"E-Waste\": e_waste,
+		\"Plastics\": plastics
+	}
+
+	var resource_container = $ResourcesContainer/GridContainer
+
+	# Clear previous entries
+	for child in resource_container.get_children():
+		child.queue_free()
+
+	# Add new entries
+	for resource_name in resource_values.keys():
+		var name_label = Label.new()
+		name_label.text = resource_name
+		resource_container.add_child(name_label)
+
+		var quantity_label = Label.new()
+		quantity_label.text = str(resource_values[resource_name])
+		resource_container.add_child(quantity_label)
+
+func reset_resources():
+	scrap_metal = 0
+	e_waste = 0
+	plastics = 0
+	update_resource_display()
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yl1xx"]
+bg_color = Color(0.374139, 0.374139, 0.374139, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+
+[node name="Main" type="Node"]
+script = ExtResource("1_648gp")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SystemButtons" type="HBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 114.0
+offset_bottom = 49.0
+
+[node name="SaveButton" type="Button" parent="UI/SystemButtons"]
+layout_mode = 2
+text = "SAVE"
+
+[node name="ClearLog" type="Button" parent="UI/SystemButtons"]
+layout_mode = 2
+text = "CLEAR LOG"
+
+[node name="ResetButton" type="Button" parent="UI/SystemButtons"]
+layout_mode = 2
+text = "RESET"
+
+[node name="DebugButton" type="Button" parent="UI/SystemButtons"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_1how4")
+text = "DEBUG"
+
+[node name="ActionButtons" type="HBoxContainer" parent="UI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 261.0
+offset_right = 773.0
+offset_bottom = 301.0
+
+[node name="RedeployButton" type="Button" parent="UI/ActionButtons"]
+layout_mode = 2
+text = "Redeploy"
+
+[node name="ExploreButton" type="Button" parent="UI/ActionButtons"]
+layout_mode = 2
+text = "Explore"
+
+[node name="SearchButton" type="Button" parent="UI/ActionButtons"]
+visible = false
+layout_mode = 2
+text = "Search"
+
+[node name="TransportButton" type="Button" parent="UI/ActionButtons"]
+visible = false
+layout_mode = 2
+text = "Salvage"
+
+[node name="ScanButton" type="Button" parent="UI/ActionButtons"]
+visible = false
+layout_mode = 2
+text = "Scan"
+
+[node name="SalvageButton" type="Button" parent="UI/ActionButtons"]
+visible = false
+layout_mode = 2
+text = "Salvage"
+
+[node name="EnergyBar" type="ProgressBar" parent="UI"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -566.0
+offset_top = -13.0
+offset_right = 205.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+rounded = true
+show_percentage = false
+
+[node name="EnergyLabel" type="Label" parent="UI/EnergyBar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -11.5
+offset_right = 29.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Energy:"
+
+[node name="ResultPanel" type="PanelContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -566.0
+offset_top = -301.0
+offset_right = 205.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/ResultPanel"]
+layout_mode = 2
+follow_focus = true
+
+[node name="ResultLog" type="VBoxContainer" parent="UI/ResultPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ResourcesPanel" type="PanelContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -361.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = 301.0
+grow_horizontal = 0
+script = SubResource("GDScript_0vcfr")
+
+[node name="ResourcesContainer" type="VBoxContainer" parent="UI/ResourcesPanel"]
+layout_mode = 2
+
+[node name="ResourcesHeader" type="Label" parent="UI/ResourcesPanel/ResourcesContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_yl1xx")
+text = "Resources"
+horizontal_alignment = 1
+
+[node name="GridContainer" type="GridContainer" parent="UI/ResourcesPanel/ResourcesContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="ResourcesList" type="Label" parent="UI/ResourcesPanel/ResourcesContainer/GridContainer"]
+layout_mode = 2
+
+[node name="TechPanel" type="PanelContainer" parent="UI"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -361.0
+offset_top = -337.0
+offset_right = -12.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="TechContainer" type="VBoxContainer" parent="UI/TechPanel"]
+layout_mode = 2
+
+[node name="TechnologyLabel" type="Label" parent="UI/TechPanel/TechContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_yl1xx")
+text = "Technology"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="UI/SystemButtons/SaveButton" to="." method="save_game"]
+[connection signal="pressed" from="UI/SystemButtons/ClearLog" to="." method="clear_log"]
+[connection signal="pressed" from="UI/SystemButtons/ResetButton" to="." method="reset_game"]
+[connection signal="pressed" from="UI/SystemButtons/DebugButton" to="." method="debug"]
+[connection signal="pressed" from="UI/ActionButtons/RedeployButton" to="." method="_on_redeploy_button_pressed"]
+[connection signal="pressed" from="UI/ActionButtons/ExploreButton" to="." method="explore"]
+[connection signal="pressed" from="UI/ActionButtons/SearchButton" to="." method="search"]
+[connection signal="pressed" from="UI/ActionButtons/TransportButton" to="." method="transport"]
+[connection signal="pressed" from="UI/ActionButtons/ScanButton" to="." method="salvage"]
+[connection signal="pressed" from="UI/ActionButtons/SalvageButton" to="." method="salvage"]
