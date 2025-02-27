@@ -320,7 +320,7 @@ func pv_panel_install():
 		update_resource_display()
 		
 		energy_cost_explore = 5
-		update_energy_display()
+		update_button_energy_cost()
 		
 		pv_panel_installed = true
 		update_tech_display()
@@ -337,7 +337,7 @@ func hd_lens_install():
 		update_resource_display()
 		
 		energy_cost_search = 5
-		update_energy_display()
+		update_button_energy_cost()
 		
 		hd_lens_installed = true
 		update_tech_display()
@@ -354,7 +354,7 @@ func qt_device_install():
 		update_resource_display()
 		
 		energy_cost_transport = 5
-		update_energy_display()
+		update_button_energy_cost()
 		
 		qt_device_installed = true
 		update_tech_display()
@@ -371,7 +371,7 @@ func hf_sensor_install():
 		update_resource_display()
 		
 		energy_cost_scan = 5
-		update_energy_display()
+		update_button_energy_cost()
 		
 		hf_sensors_installed = true
 		update_tech_display()
@@ -388,7 +388,7 @@ func he_laser_install():
 		update_resource_display()
 		
 		energy_cost_salvage = 5
-		update_energy_display()
+		update_button_energy_cost()
 		
 		he_laser_installed = true
 		update_tech_display()
