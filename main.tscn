@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvpd01ej5e6e"]
+[gd_scene load_steps=7 format=3 uid="uid://bvpd01ej5e6e"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_648gp"]
-[ext_resource type="Texture2D" uid="uid://uxe4g13uad0f" path="res://overlay.png" id="2_xpr7u"]
+[ext_resource type="Texture2D" uid="uid://cr8dywxbeh4lr" path="res://images/static.png" id="2_cxt3p"]
+[ext_resource type="Texture2D" uid="uid://uxe4g13uad0f" path="res://images/overlay.png" id="2_xpr7u"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1how4"]
 bg_color = Color(1, 0, 1, 1)
@@ -248,7 +249,12 @@ offset_right = 784.0
 offset_bottom = 408.0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_1uihr")
 
-[node name="TextureRect" type="TextureRect" parent="UI/CameraPanel"]
+[node name="LocationPicture" type="TextureRect" parent="UI/CameraPanel"]
+layout_mode = 2
+texture = ExtResource("2_cxt3p")
+expand_mode = 1
+
+[node name="Overlay" type="TextureRect" parent="UI/CameraPanel"]
 layout_mode = 2
 texture = ExtResource("2_xpr7u")
 

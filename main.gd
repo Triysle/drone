@@ -21,6 +21,7 @@ extends Node
 @onready var qt_device_button = $UI/TechPanel/TechContainer/QTDeviceButton
 @onready var hf_sensors_button = $UI/TechPanel/TechContainer/HFSensorsButton
 @onready var he_laser_button = $UI/TechPanel/TechContainer/HELaserButton
+@onready var location_image = $UI/CameraPanel/LocationPicture
 
 var save_path = "user://savegame.json"
 
@@ -33,6 +34,7 @@ var scrap_metal = 0
 var e_waste = 0
 var plastics = 0
 var found_resource = ""
+var current_location = "res://images/static.png"
 
 # Technology variables
 var ss_batteries_unlocked = false
@@ -58,6 +60,11 @@ var energy_cost_transport: int = 10
 # Redeploy counter
 var redeploy_count = 0
 
+# Images for the camera
+var nothing_images = ["res://images/nothing1.png", "res://images/nothing2.png", "res://images/nothing3.png"]
+var building_images = ["res://images/building1.png", "res://images/building2.png", "res://images/building3.png"]
+var wreckage_images = ["res://images/wreck1.png", "res://images/wreck2.png", "res://images/wreck3.png"]
+
 func _ready():
 	load_game()
 
@@ -66,6 +73,7 @@ func _ready():
 	update_resource_display()
 	update_tech_display()
 	update_button_energy_cost()
+	update_camera_display()
 
 	redeploy_button.visible = true
 	explore_button.visible = true
@@ -157,6 +165,9 @@ func update_tech_display():
 			he_laser_button.text = "HE Laser Installed"
 			he_laser_button.disabled = true
 
+func update_camera_display():
+	location_image.texture = load(current_location)
+
 func explore():
 	if energy >= energy_cost_explore:
 		energy -= energy_cost_explore
@@ -168,15 +179,21 @@ func explore():
 		scan_button.visible = false
 		
 		var outcome = randi() % 3
-
+		
 		if outcome == 0:
 			log_result("You found nothing. Try exploring again.")
+			current_location = nothing_images.pick_random()
 		elif outcome == 1:
 			log_result("You found an abandoned building! You can search it.")
 			search_button.visible = true
+			current_location = building_images.pick_random()
 		elif outcome == 2:
 			log_result("You found a destroyed drone! You can scan it.")
 			scan_button.visible = true
+			current_location = wreckage_images.pick_random()
+		
+		update_camera_display()
+		
 	else:
 		log_result("Not enough energy.")
 
