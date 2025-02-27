@@ -433,6 +433,9 @@ func clear_log():
 func redeploy():
 	energy = max_energy
 	update_energy_display()
+	
+	current_location = "res://images/static.png"
+	update_camera_display()
 
 	# Increment redeploy count and output the message
 	redeploy_count += 1
