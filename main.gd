@@ -82,6 +82,7 @@ func update_button_energy_cost():
 func update_energy_display():
 	energy_label.text = "Energy: " + str(energy) + "/" + str(max_energy)
 	energy_bar.value = energy
+	energy_bar.max_value = max_energy
 
 # Display resource quantities dynamically
 func update_resource_display():
