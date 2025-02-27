@@ -297,9 +297,9 @@ func salvage():
 		log_result("Not enough energy.")
 
 func ss_batteries_install():
-	if scrap_metal >= 2 and e_waste >= 3:
-		scrap_metal -= 2
-		e_waste -= 3
+	if scrap_metal >= 1 and e_waste >= 4:
+		scrap_metal -= 1
+		e_waste -= 4
 		update_resource_display()
 		
 		max_energy = 200
