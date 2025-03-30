@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://budovbof1i37k"
-path="res://.godot/imported/building3.png-de370deb25d9e531e8968137cef38754.ctex"
+uid="uid://uxe4g13uad0f"
+path="res://.godot/imported/overlay.png-19fd4d5a9cc2f5bf1041ed95301a1767.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/building3.png"
-dest_files=["res://.godot/imported/building3.png-de370deb25d9e531e8968137cef38754.ctex"]
+source_file="res://images/ui/overlay.png"
+dest_files=["res://.godot/imported/overlay.png-19fd4d5a9cc2f5bf1041ed95301a1767.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvf047pp73qnl"
-path="res://.godot/imported/wreck2.png-c3c0d9fe24573676e77e85336e3033ac.ctex"
+uid="uid://buacd4uj87mrh"
+path="res://.godot/imported/wreck3.png-60c09abd943685934790152d36bedfd5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/wreck2.png"
-dest_files=["res://.godot/imported/wreck2.png-c3c0d9fe24573676e77e85336e3033ac.ctex"]
+source_file="res://images/locations/wreck3.png"
+dest_files=["res://.godot/imported/wreck3.png-60c09abd943685934790152d36bedfd5.ctex"]
 
 [params]
 

@@ -1,21 +1,43 @@
-[gd_scene load_steps=7 format=3 uid="uid://bvpd01ej5e6e"]
+[gd_scene load_steps=13 format=3 uid="uid://bvpd01ej5e6e"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_648gp"]
-[ext_resource type="Texture2D" uid="uid://cr8dywxbeh4lr" path="res://images/static.png" id="2_cxt3p"]
-[ext_resource type="Texture2D" uid="uid://uxe4g13uad0f" path="res://images/overlay.png" id="2_xpr7u"]
+[ext_resource type="Script" uid="uid://b1e7iohec7vc7" path="res://scripts/main.gd" id="1_sugp2"]
+[ext_resource type="Script" uid="uid://bunulofsggfjs" path="res://scripts/managers/game_manager.gd" id="2_choun"]
+[ext_resource type="Texture2D" uid="uid://cr8dywxbeh4lr" path="res://images/locations/static.png" id="2_jyhfs"]
+[ext_resource type="Texture2D" uid="uid://uxe4g13uad0f" path="res://images/ui/overlay.png" id="3_tbgi4"]
+[ext_resource type="Script" uid="uid://qnji6dibq78s" path="res://scripts/managers/resource_manager.gd" id="3_ya4ey"]
+[ext_resource type="Script" uid="uid://g8rd14honuyc" path="res://scripts/managers/technology_manager.gd" id="4_eb6dy"]
+[ext_resource type="Script" uid="uid://bw21ta00ouw0d" path="res://scripts/managers/location_manager.gd" id="5_trceg"]
+[ext_resource type="Script" uid="uid://c8rhsjt0qldji" path="res://scripts/managers/save_manager.gd" id="6_a8y0u"]
+[ext_resource type="Script" uid="uid://1tysbbduvddk" path="res://scripts/ui/ui_controller.gd" id="7_jkv2x"]
+[ext_resource type="Script" uid="uid://jxat0lg5h7bm" path="res://scripts/ui/log_display.gd" id="10_jbj1t"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1how4"]
-bg_color = Color(1, 0, 1, 1)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0wfyh"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yl1xx"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sugp2"]
 bg_color = Color(0.374139, 0.374139, 0.374139, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1uihr"]
-
 [node name="Main" type="Node"]
-script = ExtResource("1_648gp")
+script = ExtResource("1_sugp2")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("2_choun")
+
+[node name="ResourceManager" type="Node" parent="GameManager"]
+script = ExtResource("3_ya4ey")
+
+[node name="TechnologyManager" type="Node" parent="GameManager"]
+script = ExtResource("4_eb6dy")
+
+[node name="LocationManager" type="Node" parent="GameManager"]
+script = ExtResource("5_trceg")
+
+[node name="SaveManager" type="Node" parent="GameManager"]
+script = ExtResource("6_a8y0u")
+
+[node name="UIController" type="Node" parent="GameManager"]
+script = ExtResource("7_jkv2x")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -25,6 +47,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="CameraPanel" type="PanelContainer" parent="UI"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 784.0
+offset_bottom = 408.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0wfyh")
+
+[node name="LocationPicture" type="TextureRect" parent="UI/CameraPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_jyhfs")
+expand_mode = 1
+
+[node name="Overlay" type="TextureRect" parent="UI/CameraPanel"]
+layout_mode = 2
+texture = ExtResource("3_tbgi4")
+
 [node name="SystemButtons" type="HBoxContainer" parent="UI"]
 layout_mode = 0
 offset_left = 512.0
@@ -33,27 +73,20 @@ offset_right = 784.0
 offset_bottom = 448.0
 alignment = 2
 
-[node name="AutoSaveTimer" type="Timer" parent="UI/SystemButtons"]
-wait_time = 60.0
-autostart = true
-
 [node name="SaveButton" type="Button" parent="UI/SystemButtons"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "SAVE"
 
-[node name="ClearLog" type="Button" parent="UI/SystemButtons"]
+[node name="ClearLogButton" type="Button" parent="UI/SystemButtons"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "CLEAR LOG"
 
 [node name="ResetButton" type="Button" parent="UI/SystemButtons"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "RESET"
-
-[node name="DebugButton" type="Button" parent="UI/SystemButtons"]
-visible = false
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_1how4")
-text = "DEBUG"
 
 [node name="ActionButtons" type="HBoxContainer" parent="UI"]
 layout_mode = 0
@@ -63,34 +96,41 @@ offset_right = 512.0
 offset_bottom = 448.0
 
 [node name="RedeployButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Redeploy"
 
 [node name="ExploreButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Explore"
+text = "Explore (10)"
 
 [node name="SearchButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "Search"
-
-[node name="TransportButton" type="Button" parent="UI/ActionButtons"]
-visible = false
-layout_mode = 2
-text = "Salvage"
+text = "Search (10)"
 
 [node name="ScanButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "Scan"
+text = "Scan (10)"
 
 [node name="SalvageButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "Salvage"
+text = "Salvage (10)"
+
+[node name="TransportButton" type="Button" parent="UI/ActionButtons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Transport (10)"
 
 [node name="EnergyBar" type="ProgressBar" parent="UI"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -103,10 +143,12 @@ offset_right = 208.0
 offset_bottom = 162.0
 grow_horizontal = 2
 grow_vertical = 2
+value = 100.0
 rounded = true
 show_percentage = false
 
 [node name="EnergyLabel" type="Label" parent="UI/EnergyBar"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -140,8 +182,11 @@ layout_mode = 2
 follow_focus = true
 
 [node name="ResultLog" type="VBoxContainer" parent="UI/ResultPanel/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("10_jbj1t")
 
 [node name="ResourcesPanel" type="PanelContainer" parent="UI"]
 layout_mode = 1
@@ -161,21 +206,24 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_yl1xx")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sugp2")
 text = "Resources"
 horizontal_alignment = 1
 
 [node name="ScrapMetalLabel" type="Label" parent="UI/ResourcesPanel/ResourcesContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Scrap Metal: 0"
 horizontal_alignment = 1
 
 [node name="EWasteLabel" type="Label" parent="UI/ResourcesPanel/ResourcesContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "E-Waste: 0"
 horizontal_alignment = 1
 
 [node name="PlasticsLabel" type="Label" parent="UI/ResourcesPanel/ResourcesContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Plastics: 0"
 horizontal_alignment = 1
@@ -195,82 +243,55 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="TechContainer" type="VBoxContainer" parent="UI/TechPanel"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="TechnologyHeader" type="Label" parent="UI/TechPanel/TechContainer"]
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_yl1xx")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sugp2")
 text = "Technology"
 horizontal_alignment = 1
 
 [node name="SSBatteriesButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "LI Batteries
 1 Scrap Metal, 4 E-Waste"
 
 [node name="PVPanelButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "PV Panel
 2 E-Waste, 3 Plastics"
 
 [node name="HDLensButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "HD Lens
 1 Scrap Metal, 4 Plastics"
 
 [node name="QTDeviceButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "QT Device
 3 Scrap Metal, 2 Plastics"
 
 [node name="HFSensorsButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "HF Sensors
 2 Scrap Metal, 3 E-Waste"
 
 [node name="HELaserButton" type="Button" parent="UI/TechPanel/TechContainer"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 text = "HE Laser
 4 E-Waste, 1 Plastics"
-
-[node name="CameraPanel" type="PanelContainer" parent="UI"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 784.0
-offset_bottom = 408.0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_1uihr")
-
-[node name="LocationPicture" type="TextureRect" parent="UI/CameraPanel"]
-layout_mode = 2
-texture = ExtResource("2_cxt3p")
-expand_mode = 1
-
-[node name="Overlay" type="TextureRect" parent="UI/CameraPanel"]
-layout_mode = 2
-texture = ExtResource("2_xpr7u")
-
-[connection signal="timeout" from="UI/SystemButtons/AutoSaveTimer" to="." method="save_game"]
-[connection signal="pressed" from="UI/SystemButtons/SaveButton" to="." method="save_game"]
-[connection signal="pressed" from="UI/SystemButtons/ClearLog" to="." method="clear_log"]
-[connection signal="pressed" from="UI/SystemButtons/ResetButton" to="." method="reset_game"]
-[connection signal="pressed" from="UI/ActionButtons/RedeployButton" to="." method="redeploy"]
-[connection signal="pressed" from="UI/ActionButtons/ExploreButton" to="." method="explore"]
-[connection signal="pressed" from="UI/ActionButtons/SearchButton" to="." method="search"]
-[connection signal="pressed" from="UI/ActionButtons/TransportButton" to="." method="transport"]
-[connection signal="pressed" from="UI/ActionButtons/ScanButton" to="." method="scan"]
-[connection signal="pressed" from="UI/ActionButtons/SalvageButton" to="." method="salvage"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/SSBatteriesButton" to="." method="ss_batteries_install"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/PVPanelButton" to="." method="pv_panel_install"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/HDLensButton" to="." method="hd_lens_install"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/QTDeviceButton" to="." method="qt_device_install"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/HFSensorsButton" to="." method="hf_sensor_install"]
-[connection signal="pressed" from="UI/TechPanel/TechContainer/HELaserButton" to="." method="he_laser_install"]
