@@ -146,6 +146,9 @@ func redeploy():
 	# Reset location
 	location_manager.reset_location()
 	
+	# Animate the static effect
+	location_manager.animate_static(0.3, 0.8, 0.5)
+	
 	# Increment deployment counter
 	redeploy_count += 1
 	

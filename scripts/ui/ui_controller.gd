@@ -161,7 +161,17 @@ func update_camera_display(location_path: String) -> void:
 	if location_image:
 		# Make sure the path actually exists before trying to load
 		if ResourceLoader.exists(location_path):
+			# Load the texture
 			location_image.texture = load(location_path)
+			
+			# Animate static effect when changing locations
+			var location_manager = get_parent().get_node("LocationManager")
+			if location_manager and location_path != location_manager.location_images["static"]:
+				# If we're showing a real location (not static), reduce the static effect
+				location_manager.animate_static(0.8, 0.1, 0.5)
+			else:
+				# If we're showing static, increase the static effect
+				location_manager.animate_static(0.3, 0.8, 0.5)
 		else:
 			push_error("Could not load image at path: " + location_path)
 

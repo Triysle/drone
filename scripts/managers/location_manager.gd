@@ -4,6 +4,8 @@ extends Node
 # Current location and findings
 var current_location: String = "res://images/locations/static.png"
 var available_actions: Array = ["redeploy", "explore"]
+var static_material: ShaderMaterial
+var static_strength_tween: Tween
 
 # Images for the camera
 var location_images = {
@@ -26,8 +28,39 @@ var location_images = {
 }
 
 func _ready():
+	# Initialize the static material
+	static_material = ShaderMaterial.new()
+	static_material.shader = load("res://shaders/static_effect.gdshader")
+	static_material.set_shader_parameter("noise_strength", 0.3)
+	static_material.set_shader_parameter("noise_speed", 5.0)
+	static_material.set_shader_parameter("original_strength", 0.8)
+	
 	# Make sure we start with the static screen
-	current_location = location_images.static
+	current_location = location_images["static"]
+	
+	# We'll need a reference to the UI controller to access the image
+	await get_tree().process_frame
+	var ui_controller = get_parent().get_node("UIController")
+	if ui_controller and ui_controller.location_image:
+		ui_controller.location_image.material = static_material
+
+func animate_static(start_strength: float = 0.8, end_strength: float = 0.1, duration: float = 1.0) -> void:
+	# Kill any existing tween
+	if static_strength_tween:
+		static_strength_tween.kill()
+	
+	# Create a new tween
+	static_strength_tween = create_tween()
+	static_strength_tween.tween_method(
+		set_static_strength, 
+		start_strength, 
+		end_strength, 
+		duration
+	)
+
+func set_static_strength(strength: float) -> void:
+	if static_material:
+		static_material.set_shader_parameter("noise_strength", strength)
 
 # Reset location to default
 func reset_location() -> void:
@@ -54,6 +87,9 @@ func remove_available_action(action: String) -> void:
 func explore() -> Dictionary:
 	# Reset available actions except for redeploy and explore
 	available_actions = ["redeploy", "explore"]
+	
+	# Animate static first
+	animate_static(0.8, 0.1, 0.5)
 	
 	var outcome = randi() % 3
 	var result = {}

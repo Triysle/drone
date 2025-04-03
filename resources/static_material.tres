@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://f0edbdivafc4"]
+
+[ext_resource type="Shader" uid="uid://bj8ipjhefis7g" path="res://resources/static_effect.gdshader" id="1_xauym"]
+
+[resource]
+shader = ExtResource("1_xauym")
+shader_parameter/noise_strength = 0.3
+shader_parameter/noise_speed = 5.0
+shader_parameter/original_strength = 0.8
