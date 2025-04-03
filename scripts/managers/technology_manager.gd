@@ -10,15 +10,13 @@ var energy_cost_explore: int = 10
 var energy_cost_search: int = 10
 var energy_cost_scan: int = 10
 var energy_cost_salvage: int = 10
-var energy_cost_transport: int = 10
 
 # Dictionary to map actions to their cost variables
 const ACTION_COST_MAP = {
 	"explore": "energy_cost_explore",
 	"search": "energy_cost_search",
 	"scan": "energy_cost_scan",
-	"salvage": "energy_cost_salvage",
-	"transport": "energy_cost_transport"
+	"salvage": "energy_cost_salvage"
 }
 
 # Technologies data structure
@@ -47,14 +45,6 @@ var technologies = {
 		"description": "Decreases Search energy cost",
 		"costs": {"scrap_metal": 1, "plastics": 4},
 		"effect": func(): energy_cost_search = 5
-	},
-	"qt_device": {
-		"unlocked": false,
-		"installed": false,
-		"display_name": "QT Device",
-		"description": "Decreases Transport energy cost",
-		"costs": {"scrap_metal": 3, "plastics": 2},
-		"effect": func(): energy_cost_transport = 5
 	},
 	"hf_sensors": {
 		"unlocked": false,
@@ -111,8 +101,7 @@ func get_all_action_costs() -> Dictionary:
 		"explore": energy_cost_explore,
 		"search": energy_cost_search,
 		"scan": energy_cost_scan,
-		"salvage": energy_cost_salvage,
-		"transport": energy_cost_transport
+		"salvage": energy_cost_salvage
 	}
 
 # Unlock a technology so it can be installed
@@ -180,8 +169,7 @@ func get_save_data() -> Dictionary:
 			"explore": energy_cost_explore,
 			"search": energy_cost_search,
 			"scan": energy_cost_scan,
-			"salvage": energy_cost_salvage,
-			"transport": energy_cost_transport
+			"salvage": energy_cost_salvage
 		},
 		"technologies": tech_save_data
 	}
@@ -195,7 +183,6 @@ func load_from_save_data(data: Dictionary) -> void:
 	energy_cost_search = energy_costs.get("search", 10)
 	energy_cost_scan = energy_costs.get("scan", 10)
 	energy_cost_salvage = energy_costs.get("salvage", 10)
-	energy_cost_transport = energy_costs.get("transport", 10)
 	
 	var tech_data = data.get("technologies", {})
 	for tech_id in tech_data:

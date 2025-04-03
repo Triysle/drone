@@ -123,12 +123,6 @@ visible = false
 layout_mode = 2
 text = "Salvage (10)"
 
-[node name="TransportButton" type="Button" parent="UI/ActionButtons"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-text = "Transport (10)"
-
 [node name="EnergyBar" type="ProgressBar" parent="UI"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -274,13 +268,6 @@ visible = false
 layout_mode = 2
 text = "HD Lens
 1 Scrap Metal, 4 Plastics"
-
-[node name="QTDeviceButton" type="Button" parent="UI/TechPanel/TechContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-text = "QT Device
-3 Scrap Metal, 2 Plastics"
 
 [node name="HFSensorsButton" type="Button" parent="UI/TechPanel/TechContainer"]
 unique_name_in_owner = true

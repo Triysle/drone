@@ -3,7 +3,6 @@ extends Node
 
 # Current location and findings
 var current_location: String = "res://images/locations/static.png"
-var found_resource: String = ""
 var available_actions: Array = ["redeploy", "explore"]
 
 # Images for the camera
@@ -34,7 +33,6 @@ func _ready():
 func reset_location() -> void:
 	# Make sure we explicitly set to the static image string, not the dictionary key
 	current_location = location_images["static"]
-	found_resource = ""
 	available_actions = ["redeploy", "explore"]
 
 # Pick a random image from a category
@@ -51,11 +49,6 @@ func add_available_action(action: String) -> void:
 # Remove an action from available actions
 func remove_available_action(action: String) -> void:
 	available_actions.erase(action)
-
-# Reset found resource
-func reset_found_resource() -> void:
-	found_resource = ""
-	remove_available_action("transport")
 
 # Exploration action
 func explore() -> Dictionary:
@@ -104,12 +97,14 @@ func search() -> Dictionary:
 		var resource_options = ["Scrap Metal", "E-Waste", "Plastics"]
 		var resource = resource_options[randi() % resource_options.size()]
 		
+		# Get the resource manager to directly add the resource
+		var resource_manager = get_parent().get_node("ResourceManager")
+		resource_manager.add_resource(resource, 1)
+		
 		result = {
-			"message": "The search has turned up a small amount of " + resource + ".\nTransport it back or continue on your way!",
+			"message": "The search has turned up a small amount of " + resource + ". It has been added to your inventory.",
 			"found_resource": resource
 		}
-		
-		add_available_action("transport")
 	
 	return result
 
@@ -120,12 +115,12 @@ func scan() -> Dictionary:
 	# 50% chance to find nothing
 	if randf() < 0.5:
 		return {
-			"message": "The scan didn't reveal anything useful. Try exploring another area.",
+			"message": "The scan didn't reveal anything useful. You can still salvage the wreck.",
 			"tech_discovered": "",
 			"can_salvage": true  # Still allow salvage even when scan fails
 		}
 	
-	var tech_options = ["ss_batteries", "pv_panel", "hd_lens", "qt_device", "hf_sensors", "he_laser"]
+	var tech_options = ["ss_batteries", "pv_panel", "hd_lens", "hf_sensors", "he_laser"]
 	var scan_outcome = randi() % tech_options.size()
 	var tech_id = tech_options[scan_outcome]
 	
@@ -142,7 +137,6 @@ func scan() -> Dictionary:
 			"ss_batteries": "Install them to increase max energy!",
 			"pv_panel": "Install them to decrease Explore cost!",
 			"hd_lens": "Install it to decrease Search cost!",
-			"qt_device": "Install it to decrease Transport cost!",
 			"hf_sensors": "Install them to decrease Scan cost!",
 			"he_laser": "Install them to decrease Salvage cost!"
 		}
@@ -158,23 +152,23 @@ func salvage() -> Dictionary:
 	remove_available_action("salvage")
 	
 	var resource_options = ["Scrap Metal", "E-Waste", "Plastics"]
-	found_resource = resource_options[randi() % resource_options.size()]
+	var resource = resource_options[randi() % resource_options.size()]
 	
-	add_available_action("transport")
+	# Get the resource manager to directly add the resource
+	var resource_manager = get_parent().get_node("ResourceManager")
+	resource_manager.add_resource(resource, 1)
 	
 	return {
-		"message": "You salvaged a small amount of " + found_resource + ".\nTransport it back or continue on your way!"
+		"message": "You salvaged a small amount of " + resource + ". It has been added to your inventory."
 	}
 
 # Save/Load
 func get_save_data() -> Dictionary:
 	return {
 		"current_location": current_location,
-		"found_resource": found_resource,
 		"available_actions": available_actions
 	}
 
 func load_from_save_data(data: Dictionary) -> void:
 	current_location = data.get("current_location", location_images.static)
-	found_resource = data.get("found_resource", "")
 	available_actions = data.get("available_actions", ["redeploy", "explore"])

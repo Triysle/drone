@@ -14,7 +14,6 @@ extends Node
 	"search": $"%SearchButton",
 	"scan": $"%ScanButton",
 	"salvage": $"%SalvageButton",
-	"transport": $"%TransportButton",
 	"save": $"%SaveButton",
 	"reset": $"%ResetButton",
 	"clear_log": $"%ClearLogButton"
@@ -58,7 +57,6 @@ func _setup_tech_buttons():
 		"SSBatteriesButton": "ss_batteries",
 		"PVPanelButton": "pv_panel",
 		"HDLensButton": "hd_lens",
-		"QTDeviceButton": "qt_device",
 		"HFSensorsButton": "hf_sensors",
 		"HELaserButton": "he_laser"
 	}
@@ -157,9 +155,6 @@ func update_button_energy_cost(costs: Dictionary) -> void:
 	
 	if "salvage" in costs and action_buttons.salvage:
 		action_buttons.salvage.text = "Salvage (" + str(costs.salvage) + ")"
-	
-	if "transport" in costs and action_buttons.transport:
-		action_buttons.transport.text = "Transport (" + str(costs.transport) + ")"
 
 # Update camera display
 func update_camera_display(location_path: String) -> void:
@@ -173,13 +168,13 @@ func update_camera_display(location_path: String) -> void:
 # Update button visibility based on available actions
 func update_action_buttons_visibility(available_actions: Array) -> void:
 	for button_name in action_buttons:
-		if action_buttons[button_name] and button_name in ["redeploy", "explore", "search", "scan", "salvage", "transport"]:
+		if action_buttons[button_name] and button_name in ["redeploy", "explore", "search", "scan", "salvage"]:
 			action_buttons[button_name].visible = button_name in available_actions
 			
 # Disable all action buttons except those in the exceptions list
 func disable_action_buttons(exceptions: Array = []) -> void:
 	for button_name in action_buttons:
-		if action_buttons[button_name] and button_name in ["redeploy", "explore", "search", "scan", "salvage", "transport"]:
+		if action_buttons[button_name] and button_name in ["redeploy", "explore", "search", "scan", "salvage"]:
 			if action_buttons[button_name].visible and not button_name in exceptions:
 				action_buttons[button_name].disabled = true
 

@@ -117,8 +117,6 @@ func _on_button_clicked(button_name):
 			scan()
 		"salvage":
 			salvage()
-		"transport":
-			transport()
 		"save":
 			save_game()
 		"reset":
@@ -178,10 +176,6 @@ func search():
 	if technology_manager.consume_energy("search"):
 		var result = location_manager.search()
 		log_result(result.message)
-		
-		if result.found_resource:
-			location_manager.found_resource = result.found_resource
-		
 		update_all_displays()
 	else:
 		log_result("Not enough energy.")
@@ -213,17 +207,6 @@ func salvage():
 	if technology_manager.consume_energy("salvage"):
 		var result = location_manager.salvage()
 		log_result(result.message)
-		update_all_displays()
-	else:
-		log_result("Not enough energy.")
-
-func transport():
-	if technology_manager.consume_energy("transport"):
-		var resource_name = location_manager.found_resource
-		resource_manager.add_resource(resource_name, 1)
-		
-		log_result("Transported " + resource_name + " back to base...")
-		location_manager.reset_found_resource()
 		update_all_displays()
 	else:
 		log_result("Not enough energy.")
