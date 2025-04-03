@@ -177,24 +177,36 @@ func explore():
 
 func search():
 	if technology_manager.consume_energy("search"):
+		# Disable action buttons during the effect
+		ui_controller.disable_action_buttons()
+		
+		# Play the search effect and get the result
 		var result = location_manager.search()
+		
+		# Log the result and update UI
 		log_result(result.message)
 		update_all_displays()
+		
+		# Re-enable action buttons
+		ui_controller.enable_action_buttons()
 	else:
 		log_result("Not enough energy.")
 
 func scan():
 	if technology_manager.consume_energy("scan"):
+		# Disable action buttons during the effect
+		ui_controller.disable_action_buttons()
+		
+		# Play the scan effect and get the result
 		var result = location_manager.scan()
 		
+		# Process the scan result
 		if result.tech_discovered:
 			var tech_id = result.tech_discovered
 			var success = technology_manager.unlock_technology(tech_id)
 			
 			if success:
 				log_result("You discovered " + technology_manager.get_tech_display_name(tech_id) + "! " + result.message)
-				# Force UI update after technology discovery
-				update_all_displays()
 			else:
 				log_result("Technology discovery error: " + tech_id)
 		else:
@@ -202,15 +214,26 @@ func scan():
 			if result.can_salvage:
 				location_manager.add_available_action("salvage")
 		
+		# Update UI and re-enable buttons
 		update_all_displays()
+		ui_controller.enable_action_buttons()
 	else:
 		log_result("Not enough energy.")
 
 func salvage():
 	if technology_manager.consume_energy("salvage"):
+		# Disable action buttons during the effect
+		ui_controller.disable_action_buttons()
+		
+		# Play the salvage effect and get the result
 		var result = location_manager.salvage()
+		
+		# Log the result and update UI
 		log_result(result.message)
 		update_all_displays()
+		
+		# Re-enable action buttons
+		ui_controller.enable_action_buttons()
 	else:
 		log_result("Not enough energy.")
 

@@ -186,7 +186,12 @@ func update_camera_display(location_path: String) -> void:
 func update_action_buttons_visibility(available_actions: Array) -> void:
 	for button_name in action_buttons:
 		if action_buttons[button_name] and button_name in ["redeploy", "explore", "search", "scan", "salvage"]:
+			# Update visibility based on available actions
 			action_buttons[button_name].visible = button_name in available_actions
+			
+			# IMPORTANT FIX: Make sure buttons are enabled when they're made visible
+			if button_name in available_actions:
+				action_buttons[button_name].disabled = false
 			
 # Disable all action buttons except those in the exceptions list
 func disable_action_buttons(exceptions: Array = []) -> void:

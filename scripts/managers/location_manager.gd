@@ -6,13 +6,14 @@ var current_location: String = "res://images/locations/static.png"
 var available_actions: Array = ["redeploy", "explore"]
 var static_material: ShaderMaterial
 var static_strength_tween: Tween
+var effect_tween: Tween
 
 # Panning effect variables
 var panning_active: bool = false
 var panning_offset: Vector2 = Vector2.ZERO
 var panning_target: Vector2 = Vector2.ZERO
 var panning_speed: float = 0.5  # How quickly it moves to target
-var panning_range: float = 0.015  # Maximum % of screen to pan (reduced to prevent edge issues)
+var panning_range: float = 0.02  # Maximum % of screen to pan
 var panning_timer: Timer
 
 # Images for the camera
@@ -35,6 +36,16 @@ var location_images = {
 	]
 }
 
+# For salvage effect - random points based on location type
+var extraction_points = {
+	"wreckage": [
+		Vector2(0.3, 0.4),
+		Vector2(0.7, 0.5),
+		Vector2(0.5, 0.65),
+		Vector2(0.4, 0.6)
+	]
+}
+
 func _ready():
 	# Initialize the static material
 	static_material = ShaderMaterial.new()
@@ -44,7 +55,11 @@ func _ready():
 	static_material.set_shader_parameter("pixel_density", 300)
 	static_material.set_shader_parameter("original_strength", 0.8)
 	static_material.set_shader_parameter("offset", Vector2.ZERO)
-	static_material.set_shader_parameter("zoom_factor", 1.05) # Slight zoom to prevent edge distortion
+	
+	# Initialize effect parameters to 0
+	static_material.set_shader_parameter("search_effect_active", 0.0)
+	static_material.set_shader_parameter("scan_effect_active", 0.0)
+	static_material.set_shader_parameter("salvage_effect_active", 0.0)
 	
 	# Make sure we start with the static screen
 	current_location = location_images["static"]
@@ -96,14 +111,6 @@ func stop_panning() -> void:
 	if static_material:
 		static_material.set_shader_parameter("offset", Vector2.ZERO)
 
-# Set static effect to a fixed value without animation
-func set_static_fixed(strength: float) -> void:
-	if static_material:
-		static_material.set_shader_parameter("noise_strength", strength)
-		# Kill any existing tween to prevent ongoing animations
-		if static_strength_tween:
-			static_strength_tween.kill()
-
 func animate_static(start_strength: float = 0.8, end_strength: float = 0.1, duration: float = 1.0) -> void:
 	# Kill any existing tween
 	if static_strength_tween:
@@ -121,6 +128,115 @@ func animate_static(start_strength: float = 0.8, end_strength: float = 0.1, dura
 func set_static_strength(strength: float) -> void:
 	if static_material:
 		static_material.set_shader_parameter("noise_strength", strength)
+
+# NEW METHODS FOR VISUAL EFFECTS
+
+# Search effect - Sweeping highlight
+func play_search_effect() -> void:
+	if effect_tween:
+		effect_tween.kill()
+	
+	effect_tween = create_tween()
+	
+	# Set initial values
+	static_material.set_shader_parameter("search_effect_active", 1.0)
+	static_material.set_shader_parameter("search_sweep_progress", 0.0)
+	static_material.set_shader_parameter("search_sweep_width", 0.1)
+	static_material.set_shader_parameter("search_highlight_intensity", 0.7)
+	
+	# Animate sweep from top to bottom
+	effect_tween.tween_method(
+		set_search_sweep_progress,
+		0.0,
+		1.0,
+		0.5
+	)
+	
+	# Set effect to inactive at the end
+	effect_tween.tween_callback(func(): 
+		static_material.set_shader_parameter("search_effect_active", 0.0)
+	)
+
+func set_search_sweep_progress(progress: float) -> void:
+	if static_material:
+		static_material.set_shader_parameter("search_sweep_progress", progress)
+
+# Scan effect - Circular pulse
+func play_scan_effect() -> void:
+	if effect_tween:
+		effect_tween.kill()
+	
+	effect_tween = create_tween()
+	
+	# Set initial values
+	static_material.set_shader_parameter("scan_effect_active", 1.0)
+	static_material.set_shader_parameter("scan_pulse_progress", 0.0)
+	static_material.set_shader_parameter("scan_pulse_width", 0.05)
+	static_material.set_shader_parameter("scan_highlight_intensity", 0.7)
+	
+	# Animate pulse from center outward
+	effect_tween.tween_method(
+		set_scan_pulse_progress,
+		0.0,
+		1.0,
+		0.5
+	)
+	
+	# Set effect to inactive at the end
+	effect_tween.tween_callback(func(): 
+		static_material.set_shader_parameter("scan_effect_active", 0.0)
+	)
+
+func set_scan_pulse_progress(progress: float) -> void:
+	if static_material:
+		static_material.set_shader_parameter("scan_pulse_progress", progress)
+
+# Salvage effect - Extraction glow
+func play_salvage_effect() -> void:
+	if effect_tween:
+		effect_tween.kill()
+	
+	effect_tween = create_tween()
+	
+	# Pick a random extraction point based on the current location type
+	var extraction_point = Vector2(0.5, 0.5)  # Default to center
+	
+	# Find the location type from the current_location path
+	var location_type = "static"
+	for type in location_images:
+		if type != "static" and location_images[type] is Array:
+			for image_path in location_images[type]:
+				if current_location == image_path:
+					location_type = type
+					break
+	
+	# Get extraction points for the location type
+	if location_type in extraction_points and not extraction_points[location_type].is_empty():
+		extraction_point = extraction_points[location_type][randi() % extraction_points[location_type].size()]
+	
+	# Set initial values
+	static_material.set_shader_parameter("salvage_effect_active", 1.0)
+	static_material.set_shader_parameter("salvage_center", extraction_point)
+	static_material.set_shader_parameter("salvage_radius", 0.15)
+	static_material.set_shader_parameter("salvage_glow_intensity", 0.8)
+	static_material.set_shader_parameter("salvage_pulse_progress", 0.0)
+	
+	# Animate the pulse progress
+	effect_tween.tween_method(
+		set_salvage_pulse_progress,
+		0.0,
+		1.0,
+		0.5
+	)
+	
+	# Set effect to inactive at the end
+	effect_tween.tween_callback(func(): 
+		static_material.set_shader_parameter("salvage_effect_active", 0.0)
+	)
+
+func set_salvage_pulse_progress(progress: float) -> void:
+	if static_material:
+		static_material.set_shader_parameter("salvage_pulse_progress", progress)
 
 # Reset location to default
 func reset_location() -> void:
@@ -187,7 +303,8 @@ func explore() -> Dictionary:
 func search() -> Dictionary:
 	remove_available_action("search")
 	
-	# Don't modify static effect at all for search action
+	# Play the search effect
+	play_search_effect()
 	
 	var outcome = randi() % 2
 	var result = {}
@@ -216,7 +333,8 @@ func search() -> Dictionary:
 func scan() -> Dictionary:
 	remove_available_action("scan")
 	
-	# Don't modify static effect at all for scan action
+	# Play the scan effect
+	play_scan_effect()
 	
 	# 50% chance to find nothing
 	if randf() < 0.5:
@@ -257,7 +375,8 @@ func scan() -> Dictionary:
 func salvage() -> Dictionary:
 	remove_available_action("salvage")
 	
-	# Don't modify static effect at all for salvage action
+	# Play the salvage effect
+	play_salvage_effect()
 	
 	var resource_options = ["Scrap Metal", "E-Waste", "Plastics"]
 	var resource = resource_options[randi() % resource_options.size()]
