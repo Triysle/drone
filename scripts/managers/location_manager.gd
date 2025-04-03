@@ -12,7 +12,7 @@ var panning_active: bool = false
 var panning_offset: Vector2 = Vector2.ZERO
 var panning_target: Vector2 = Vector2.ZERO
 var panning_speed: float = 0.5  # How quickly it moves to target
-var panning_range: float = 0.02  # Maximum % of screen to pan
+var panning_range: float = 0.015  # Maximum % of screen to pan (reduced to prevent edge issues)
 var panning_timer: Timer
 
 # Images for the camera
@@ -44,6 +44,7 @@ func _ready():
 	static_material.set_shader_parameter("pixel_density", 300)
 	static_material.set_shader_parameter("original_strength", 0.8)
 	static_material.set_shader_parameter("offset", Vector2.ZERO)
+	static_material.set_shader_parameter("zoom_factor", 1.05) # Slight zoom to prevent edge distortion
 	
 	# Make sure we start with the static screen
 	current_location = location_images["static"]
@@ -94,6 +95,14 @@ func stop_panning() -> void:
 	panning_offset = Vector2.ZERO
 	if static_material:
 		static_material.set_shader_parameter("offset", Vector2.ZERO)
+
+# Set static effect to a fixed value without animation
+func set_static_fixed(strength: float) -> void:
+	if static_material:
+		static_material.set_shader_parameter("noise_strength", strength)
+		# Kill any existing tween to prevent ongoing animations
+		if static_strength_tween:
+			static_strength_tween.kill()
 
 func animate_static(start_strength: float = 0.8, end_strength: float = 0.1, duration: float = 1.0) -> void:
 	# Kill any existing tween
@@ -178,6 +187,8 @@ func explore() -> Dictionary:
 func search() -> Dictionary:
 	remove_available_action("search")
 	
+	# Don't modify static effect at all for search action
+	
 	var outcome = randi() % 2
 	var result = {}
 	
@@ -204,6 +215,8 @@ func search() -> Dictionary:
 # Scan action
 func scan() -> Dictionary:
 	remove_available_action("scan")
+	
+	# Don't modify static effect at all for scan action
 	
 	# 50% chance to find nothing
 	if randf() < 0.5:
@@ -243,6 +256,8 @@ func scan() -> Dictionary:
 # Salvage action
 func salvage() -> Dictionary:
 	remove_available_action("salvage")
+	
+	# Don't modify static effect at all for salvage action
 	
 	var resource_options = ["Scrap Metal", "E-Waste", "Plastics"]
 	var resource = resource_options[randi() % resource_options.size()]

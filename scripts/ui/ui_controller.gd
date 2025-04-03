@@ -174,12 +174,11 @@ func update_camera_display(location_path: String) -> void:
 		else:
 			# Make sure the path actually exists before trying to load
 			if ResourceLoader.exists(location_path):
-				# Load the texture
+				# Load the texture without changing static effect
 				location_image.texture = load(location_path)
 				
-				# When showing a real location, increase original_strength and decrease noise
-				if location_manager:
-					location_manager.animate_static(0.8, 0.3, 0.5)
+				# We don't modify the static effect here at all for location changes
+				# The static effect will only be animated during redeploy and explore actions
 			else:
 				push_error("Could not load image at path: " + location_path)
 

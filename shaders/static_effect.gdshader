@@ -10,6 +10,8 @@ uniform float pixel_density : hint_range(10.0, 200.0) = 80.0;
 uniform float original_strength : hint_range(0.0, 1.0) = 0.3;
 // Offset for panning effect
 uniform vec2 offset = vec2(0.0, 0.0);
+// Zoom factor to prevent edge distortion
+uniform float zoom_factor : hint_range(1.0, 1.5) = 1.05;
 
 // Random function - returns a random value based on coordinates
 float random(vec2 uv) {
@@ -17,11 +19,16 @@ float random(vec2 uv) {
 }
 
 void fragment() {
+    // Apply zoom factor and center the zoom effect
+    vec2 centered_uv = UV - 0.5;
+    vec2 zoomed_uv = centered_uv / zoom_factor + 0.5;
+    
     // Offset the UV coordinates for panning
-    vec2 panned_uv = UV + offset;
+    vec2 panned_uv = zoomed_uv + offset;
     
     // Get the original texture color (or use black if none)
-    vec4 original_color = texture(TEXTURE, panned_uv);
+    // Clamp to ensure we don't sample outside the texture boundaries
+    vec4 original_color = texture(TEXTURE, clamp(panned_uv, vec2(0.0), vec2(1.0)));
     
     // Create pixelated coordinates
     vec2 pixelated_uv = floor(UV * pixel_density) / pixel_density;
