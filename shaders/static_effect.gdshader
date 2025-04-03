@@ -1,11 +1,13 @@
 shader_type canvas_item;
 
 // Controls the static noise intensity
-uniform float noise_strength : hint_range(0.0, 1.0) = 0.3;
+uniform float noise_strength : hint_range(0.0, 1.0) = 0.7;
 // Controls how quickly the static changes
 uniform float noise_speed : hint_range(0.0, 10.0) = 5.0;
+// Controls pixel size (smaller = larger pixels)
+uniform float pixel_density : hint_range(10.0, 200.0) = 80.0;
 // Original texture opacity
-uniform float original_strength : hint_range(0.0, 1.0) = 0.8;
+uniform float original_strength : hint_range(0.0, 1.0) = 0.3;
 
 // Random function - returns a random value based on coordinates
 float random(vec2 uv) {
@@ -13,19 +15,20 @@ float random(vec2 uv) {
 }
 
 void fragment() {
-    // Get the original texture color
+    // Get the original texture color (or use black if none)
     vec4 original_color = texture(TEXTURE, UV);
+    
+    // Create pixelated coordinates
+    vec2 pixelated_uv = floor(UV * pixel_density) / pixel_density;
     
     // Generate time-based offset for animation
     float time_offset = TIME * noise_speed;
     
-    // Generate noise for red, green, and blue channels
-    float noise_r = random(UV + vec2(0.1, 0.2) + time_offset);
-    float noise_g = random(UV + vec2(0.3, 0.4) + time_offset);
-    float noise_b = random(UV + vec2(0.5, 0.6) + time_offset);
+    // Generate noise with pixelated coordinates
+    float noise_value = random(pixelated_uv + vec2(0.1, 0.2) + time_offset);
     
-    // Create static noise color
-    vec4 noise_color = vec4(noise_r, noise_g, noise_b, 1.0);
+    // Create black and white static noise color
+    vec4 noise_color = vec4(noise_value, noise_value, noise_value, 1.0);
     
     // Mix the original texture with the noise based on the strength parameters
     COLOR = mix(original_color * original_strength, noise_color, noise_strength);

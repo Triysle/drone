@@ -159,21 +159,29 @@ func update_button_energy_cost(costs: Dictionary) -> void:
 # Update camera display
 func update_camera_display(location_path: String) -> void:
 	if location_image:
-		# Make sure the path actually exists before trying to load
-		if ResourceLoader.exists(location_path):
-			# Load the texture
-			location_image.texture = load(location_path)
-			
-			# Animate static effect when changing locations
-			var location_manager = get_parent().get_node("LocationManager")
-			if location_manager and location_path != location_manager.location_images["static"]:
-				# If we're showing a real location (not static), reduce the static effect
-				location_manager.animate_static(0.8, 0.1, 0.5)
-			else:
-				# If we're showing static, increase the static effect
-				location_manager.animate_static(0.3, 0.8, 0.5)
+		var location_manager = get_parent().get_node("LocationManager")
+		
+		if location_path.is_empty():
+			# Static view - make sure we have a texture to render on
+			if location_image.texture == null:
+				var placeholder = PlaceholderTexture2D.new()
+				placeholder.size = Vector2(640, 360)  # Set a reasonable size
+				location_image.texture = placeholder
+				
+			# If we're going to static view, increase the static effect
+			if location_manager:
+				location_manager.animate_static(0.0, 0.9, 0.5)
 		else:
-			push_error("Could not load image at path: " + location_path)
+			# Make sure the path actually exists before trying to load
+			if ResourceLoader.exists(location_path):
+				# Load the texture
+				location_image.texture = load(location_path)
+				
+				# When showing a real location, increase original_strength and decrease noise
+				if location_manager:
+					location_manager.animate_static(0.8, 0.3, 0.5)
+			else:
+				push_error("Could not load image at path: " + location_path)
 
 # Update button visibility based on available actions
 func update_action_buttons_visibility(available_actions: Array) -> void:
