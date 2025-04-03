@@ -79,8 +79,7 @@ void fragment() {
         if (abs(distance_from_center - pulse_position) < scan_pulse_width) {
             // Calculate falloff based on distance from pulse
             float falloff = 1.0 - abs(distance_from_center - pulse_position) / scan_pulse_width;
-            // Apply highlight with a blue tint (for a technical look)
-            vec4 pulse_color = vec4(0.2, 0.4, 1.0, 1.0); 
+            vec4 pulse_color = vec4(1.0, 1.0, 1.0, 1.0); 
             result_color = mix(result_color, pulse_color, falloff * scan_highlight_intensity * scan_effect_active);
         }
     }
@@ -92,9 +91,7 @@ void fragment() {
         if (distance_from_point < salvage_radius) {
             // Pulse effect for the glow
             float pulse = sin(salvage_pulse_progress * 3.14159) * salvage_glow_intensity;
-            
-            // Apply glow - bright yellow/orange to suggest extraction of valuable parts
-            vec4 glow_color = vec4(1.0, 0.8, 0.2, 1.0);
+            vec4 glow_color = vec4(1.0, 1.0, 1.0, 1.0);
             float glow_factor = (1.0 - distance_from_point / salvage_radius) * pulse * salvage_effect_active;
             result_color = mix(result_color, glow_color, glow_factor);
         }

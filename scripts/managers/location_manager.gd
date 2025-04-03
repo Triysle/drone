@@ -129,10 +129,20 @@ func set_static_strength(strength: float) -> void:
 	if static_material:
 		static_material.set_shader_parameter("noise_strength", strength)
 
+# Helper function to reset all effect parameters
+func reset_all_effects() -> void:
+	if static_material:
+		static_material.set_shader_parameter("search_effect_active", 0.0)
+		static_material.set_shader_parameter("scan_effect_active", 0.0)
+		static_material.set_shader_parameter("salvage_effect_active", 0.0)
+
 # NEW METHODS FOR VISUAL EFFECTS
 
 # Search effect - Sweeping highlight
 func play_search_effect() -> void:
+	# Reset all effects first
+	reset_all_effects()
+	
 	if effect_tween:
 		effect_tween.kill()
 	
@@ -163,6 +173,9 @@ func set_search_sweep_progress(progress: float) -> void:
 
 # Scan effect - Circular pulse
 func play_scan_effect() -> void:
+	# Reset all effects first
+	reset_all_effects()
+	
 	if effect_tween:
 		effect_tween.kill()
 	
@@ -193,6 +206,9 @@ func set_scan_pulse_progress(progress: float) -> void:
 
 # Salvage effect - Extraction glow
 func play_salvage_effect() -> void:
+	# Reset all effects first
+	reset_all_effects()
+	
 	if effect_tween:
 		effect_tween.kill()
 	
@@ -244,6 +260,9 @@ func reset_location() -> void:
 	current_location = location_images["static"]
 	available_actions = ["redeploy", "explore"]
 	
+	# Reset all visual effects
+	reset_all_effects()
+	
 	# Stop panning for static screen
 	stop_panning()
 
@@ -266,6 +285,9 @@ func remove_available_action(action: String) -> void:
 func explore() -> Dictionary:
 	# Reset available actions except for redeploy and explore
 	available_actions = ["redeploy", "explore"]
+	
+	# Reset all visual effects
+	reset_all_effects()
 	
 	# Animate static first
 	animate_static(0.8, 0.1, 0.5)
