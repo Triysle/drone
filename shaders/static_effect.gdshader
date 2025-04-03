@@ -8,6 +8,8 @@ uniform float noise_speed : hint_range(0.0, 10.0) = 5.0;
 uniform float pixel_density : hint_range(10.0, 200.0) = 80.0;
 // Original texture opacity
 uniform float original_strength : hint_range(0.0, 1.0) = 0.3;
+// Offset for panning effect
+uniform vec2 offset = vec2(0.0, 0.0);
 
 // Random function - returns a random value based on coordinates
 float random(vec2 uv) {
@@ -15,8 +17,11 @@ float random(vec2 uv) {
 }
 
 void fragment() {
+    // Offset the UV coordinates for panning
+    vec2 panned_uv = UV + offset;
+    
     // Get the original texture color (or use black if none)
-    vec4 original_color = texture(TEXTURE, UV);
+    vec4 original_color = texture(TEXTURE, panned_uv);
     
     // Create pixelated coordinates
     vec2 pixelated_uv = floor(UV * pixel_density) / pixel_density;

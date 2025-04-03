@@ -7,6 +7,14 @@ var available_actions: Array = ["redeploy", "explore"]
 var static_material: ShaderMaterial
 var static_strength_tween: Tween
 
+# Panning effect variables
+var panning_active: bool = false
+var panning_offset: Vector2 = Vector2.ZERO
+var panning_target: Vector2 = Vector2.ZERO
+var panning_speed: float = 0.5  # How quickly it moves to target
+var panning_range: float = 0.02  # Maximum % of screen to pan
+var panning_timer: Timer
+
 # Images for the camera
 var location_images = {
 	"static": "res://images/locations/static.png",
@@ -35,15 +43,57 @@ func _ready():
 	static_material.set_shader_parameter("noise_speed", 3.0)
 	static_material.set_shader_parameter("pixel_density", 300)
 	static_material.set_shader_parameter("original_strength", 0.8)
+	static_material.set_shader_parameter("offset", Vector2.ZERO)
 	
 	# Make sure we start with the static screen
 	current_location = location_images["static"]
+	
+	# Set up panning timer
+	panning_timer = Timer.new()
+	panning_timer.wait_time = 2.0  # Change target every 2 seconds
+	panning_timer.one_shot = false
+	panning_timer.connect("timeout", Callable(self, "_on_panning_timer_timeout"))
+	add_child(panning_timer)
 	
 	# We'll need a reference to the UI controller to access the image
 	await get_tree().process_frame
 	var ui_controller = get_parent().get_node("UIController")
 	if ui_controller and ui_controller.location_image:
 		ui_controller.location_image.material = static_material
+
+func _physics_process(delta: float) -> void:
+	if panning_active:
+		# Interpolate smoothly toward the target
+		panning_offset = panning_offset.lerp(panning_target, panning_speed * delta)
+		
+		# Apply the offset to the shader
+		if static_material:
+			static_material.set_shader_parameter("offset", panning_offset)
+
+func _on_panning_timer_timeout() -> void:
+	if panning_active:
+		# Generate new random target within range
+		panning_target = Vector2(
+			randf_range(-panning_range, panning_range),
+			randf_range(-panning_range, panning_range)
+		)
+
+func start_panning() -> void:
+	panning_active = true
+	panning_offset = Vector2.ZERO
+	panning_target = Vector2(
+		randf_range(-panning_range, panning_range),
+		randf_range(-panning_range, panning_range)
+	)
+	panning_timer.start()
+
+func stop_panning() -> void:
+	panning_active = false
+	panning_timer.stop()
+	# Reset offset
+	panning_offset = Vector2.ZERO
+	if static_material:
+		static_material.set_shader_parameter("offset", Vector2.ZERO)
 
 func animate_static(start_strength: float = 0.8, end_strength: float = 0.1, duration: float = 1.0) -> void:
 	# Kill any existing tween
@@ -68,6 +118,9 @@ func reset_location() -> void:
 	# Make sure we explicitly set to the static image string, not the dictionary key
 	current_location = location_images["static"]
 	available_actions = ["redeploy", "explore"]
+	
+	# Stop panning for static screen
+	stop_panning()
 
 # Pick a random image from a category
 func get_random_location_image(category: String) -> String:
@@ -101,6 +154,7 @@ func explore() -> Dictionary:
 			"location_type": "nothing"
 		}
 		current_location = get_random_location_image("nothing")
+		start_panning()  # Start panning effect
 	elif outcome == 1:
 		result = {
 			"message": "You found an abandoned building! You can search it.",
@@ -108,6 +162,7 @@ func explore() -> Dictionary:
 		}
 		current_location = get_random_location_image("building")
 		add_available_action("search")
+		start_panning()  # Start panning effect
 	elif outcome == 2:
 		result = {
 			"message": "You found a destroyed drone! You can scan it.",
@@ -115,6 +170,7 @@ func explore() -> Dictionary:
 		}
 		current_location = get_random_location_image("wreckage")
 		add_available_action("scan")
+		start_panning()  # Start panning effect
 	
 	return result
 
@@ -209,3 +265,9 @@ func get_save_data() -> Dictionary:
 func load_from_save_data(data: Dictionary) -> void:
 	current_location = data.get("current_location", location_images.static)
 	available_actions = data.get("available_actions", ["redeploy", "explore"])
+	
+	# Start panning if we're loading a real location (not static)
+	if current_location != location_images["static"]:
+		start_panning()
+	else:
+		stop_panning()
