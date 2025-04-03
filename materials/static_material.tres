@@ -4,6 +4,7 @@
 
 [resource]
 shader = ExtResource("1_473yf")
-shader_parameter/noise_strength = 0.3
+shader_parameter/noise_strength = 0.7
 shader_parameter/noise_speed = 5.0
-shader_parameter/original_strength = 0.8
+shader_parameter/pixel_density = 80.0
+shader_parameter/original_strength = 0.7

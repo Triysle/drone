@@ -32,7 +32,8 @@ func _ready():
 	static_material = ShaderMaterial.new()
 	static_material.shader = load("res://shaders/static_effect.gdshader")
 	static_material.set_shader_parameter("noise_strength", 0.3)
-	static_material.set_shader_parameter("noise_speed", 5.0)
+	static_material.set_shader_parameter("noise_speed", 3.0)
+	static_material.set_shader_parameter("pixel_density", 300)
 	static_material.set_shader_parameter("original_strength", 0.8)
 	
 	# Make sure we start with the static screen
